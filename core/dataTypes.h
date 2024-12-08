@@ -49,7 +49,12 @@ struct user_info
     bool isAdmin;
     QByteArray avatar;
 };
-
+enum class searchType
+{
+    all,    // 全部收入支出
+    income, // 收入
+    expense // 支出
+};
 //struct message_info
 //{
 //    QString message;

@@ -46,8 +46,8 @@ set(PROJECT_SOURCES
     ui/HomeWealth/page/page_edit/delegate_combox/delegate_combox.cpp
     ui/HomeWealth/page/page_edit/delegate_combox/delegate_combox.h
     #多选对话框
-    ui/HomeWealth/page/page_edit/dialog_multiSelect/dialog_multiSelect.cpp
-    ui/HomeWealth/page/page_edit/dialog_multiSelect/dialog_multiSelect.h
+    ui/HomeWealth/page/page_edit/dialog_multiSelect_for_familyUser/dialog_multiSelect_for_familyUser.cpp
+    ui/HomeWealth/page/page_edit/dialog_multiSelect_for_familyUser/dialog_multiSelect_for_familyUser.h
     #登录窗口
     ui/Login/ClientLogin.ui
     ui/Login/ClientLogin.cpp

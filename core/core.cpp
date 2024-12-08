@@ -83,6 +83,10 @@ void Core::onReceiveNewMessage(QString message)
     {
         ProcessGetFamilyUserList(json);
     }
+    else if (type == "getDataExResponse")
+    {
+        processGetDataResponse(json);
+    }
     else
     {
         Logger::getInstance().log("未知消息类型");
@@ -181,6 +185,45 @@ void Core::getFamilyUserList(int family_id)
     m_pProtocol->sendMessage(doc.toJson());
 }
 
+void Core::getDataRequestEx(int user_id, QString keyword, QVector<user_info> family_user_list, bool search_all_time, searchType type, bool search_time_all, QDateTime start_time, QDateTime end_time)
+{
+    if (family_user_list.size() == 0)
+    {
+        Logger::getInstance().log("家庭成员列表为空");
+        return;
+    }
+    QJsonObject json;
+    json["type"] = "getDataEx";
+    json["keyword"] = keyword;
+    json["search_all_time"] = search_all_time;
+    if (type == searchType::all)
+        json["search_type"] = "all";
+    else if (type == searchType::income)
+        json["search_type"] = "income";
+    else if (type == searchType::expense)
+        json["search_type"] = "expense";
+    if (search_time_all)
+    {
+        json["search_time_all"] = search_time_all;
+    }
+    else
+    {
+        json["start_time"] = start_time.toString("yyyy-MM-dd hh:mm:ss");
+        json["end_time"] = end_time.toString("yyyy-MM-dd hh:mm:ss");
+    }
+
+    QJsonArray family_user_list_json;
+    for (int i = 0; i < family_user_list.size(); i++)
+    {
+        QJsonObject user;
+        user["user_id"] = family_user_list[i].user_id;
+        family_user_list_json.append(user);
+    }
+    json["family_user_list"] = family_user_list_json;
+    QJsonDocument doc(json);
+    m_pProtocol->sendMessage(doc.toJson());
+}
+
 //-----------------------------------------------------处理接收的消息-----------------------------------------------------
 
 void Core::processLogin(QJsonObject msg_json)
@@ -201,6 +244,12 @@ void Core::processGetDataResponse(QJsonObject json)
 {
     QJsonArray dataArray = json["data"].toArray();
     emit dataReceived(dataArray);
+}
+
+void Core::processGetDataResponseEx(QJsonObject json)
+{
+    QJsonArray dataArray = json["data"].toArray();
+    emit dataReceived(dataArray); // 与普通的数据请求一样
 }
 
 void Core::ProcessInsertDetialData(QJsonObject json)

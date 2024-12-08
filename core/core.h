@@ -29,7 +29,7 @@ class Core : public QObject
     void getCategory(int family_id);
     void deleteDetialData(int detail_id);
     void getFamilyUserList(int family_id);
-
+    void getDataRequestEx(int user_id, QString keyword,QVector<user_info> family_user_list, bool search_all_time, searchType type, bool search_time_all, QDateTime start_time = QDateTime(), QDateTime end_time = QDateTime());
     // void sendMessage(message_info message);
     // 处理接收到的消息,msg是接收到的json消息
     void processLogin(QJsonObject msg_json);
@@ -42,7 +42,7 @@ class Core : public QObject
     QTimer *timer = nullptr;
     user_info *m_client_user_info;
     void processGetDataResponse(QJsonObject json); // 处理数据响应
-
+    void processGetDataResponseEx(QJsonObject json);
     void ProcessInsertDetialData(QJsonObject json);
 
     void ProcessGetCategory(QJsonObject json);

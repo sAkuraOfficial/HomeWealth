@@ -1,8 +1,8 @@
-#include "dialog_multiSelect.h"
+#include "dialog_multiSelect_for_familyUser.h"
 #include <QHBoxLayout>
 #include <QMessageBox>
 
-dialog_multiSelect::dialog_multiSelect(const QVector<user_info> &familyUsers, const QVector<user_info> &preSelectedUsers, QWidget *parent)
+dialog_multiSelect_for_familyUser::dialog_multiSelect_for_familyUser(const QVector<user_info> &familyUsers, const QVector<user_info> &preSelectedUsers, QWidget *parent)
     : QDialog(parent),
       listWidget(new QListWidget(this)),
       okButton(new QPushButton("确定", this)),
@@ -66,17 +66,17 @@ dialog_multiSelect::dialog_multiSelect(const QVector<user_info> &familyUsers, co
     connect(cancelButton, &QPushButton::clicked, this, &QDialog::reject);
 }
 
-dialog_multiSelect::~dialog_multiSelect()
+dialog_multiSelect_for_familyUser::~dialog_multiSelect_for_familyUser()
 {
     // 不需要手动删除子控件，Qt 会自动管理
 }
 
-QVector<user_info> dialog_multiSelect::getSelectedUsers() const
+QVector<user_info> dialog_multiSelect_for_familyUser::getSelectedUsers() const
 {
     return selectedUsers;
 }
 
-bool dialog_multiSelect::isUserPreSelected(int userId, const QVector<user_info> &preSelectedUsers) const
+bool dialog_multiSelect_for_familyUser::isUserPreSelected(int userId, const QVector<user_info> &preSelectedUsers) const
 {
     for (const auto &user : preSelectedUsers)
     {
