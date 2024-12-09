@@ -9,8 +9,8 @@ int main(int argc, char *argv[])
     //a.setStyle(QStyleFactory::create("fusion"));
      //a.setStyle(QStyleFactory::create("WindowsVista"));
     
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);    // 使用高 DPI 位图
+    //QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    //QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);    // 使用高 DPI 位图
     Core *core = new Core();
     ClientLogin *client_login = new ClientLogin(core);
     HomeWealth *w = new HomeWealth(core);

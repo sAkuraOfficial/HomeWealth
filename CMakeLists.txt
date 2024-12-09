@@ -48,6 +48,19 @@ set(PROJECT_SOURCES
     #多选对话框
     ui/HomeWealth/page/page_edit/dialog_multiSelect_for_familyUser/dialog_multiSelect_for_familyUser.cpp
     ui/HomeWealth/page/page_edit/dialog_multiSelect_for_familyUser/dialog_multiSelect_for_familyUser.h
+    ui/HomeWealth/page/page_edit/dialog_multiSelect_for_category/dialog_multiSelect_for_category.cpp
+    ui/HomeWealth/page/page_edit/dialog_multiSelect_for_category/dialog_multiSelect_for_category.h
+    #分类管理页面
+    ui/HomeWealth/page/page_category/page_category.ui
+    ui/HomeWealth/page/page_category/page_category.cpp
+    ui/HomeWealth/page/page_category/page_category.h
+    #radio委托
+    ui/HomeWealth/page/page_category/delegate_radio/delegate_radio.cpp
+    ui/HomeWealth/page/page_category/delegate_radio/delegate_radio.h
+    #输入分类
+    ui/HomeWealth/page/page_category/dialog_inputCategory/dialog_inputCategory.ui
+    ui/HomeWealth/page/page_category/dialog_inputCategory/dialog_inputCategory.cpp
+    ui/HomeWealth/page/page_category/dialog_inputCategory/dialog_inputCategory.h
     #登录窗口
     ui/Login/ClientLogin.ui
     ui/Login/ClientLogin.cpp

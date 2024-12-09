@@ -87,6 +87,18 @@ void Core::onReceiveNewMessage(QString message)
     {
         processGetDataResponse(json);
     }
+    else if (type == "updateCategoryDataResponse")
+    {
+        ProcessUpdateCategoryData(json);
+    }
+    else if (type == "insertCategoryDataResponse")
+    {
+        ProcessInsertCategoryData(json);
+    }
+    else if (type == "deleteCategoryDataResponse")
+    {
+        ProcessDeleteCategoryData(json);
+    }
     else
     {
         Logger::getInstance().log("未知消息类型");
@@ -115,14 +127,14 @@ void Core::registerUser(QString username, QString password)
     m_pProtocol->sendMessage(doc.toJson());
 }
 
-void Core::getFriendList(int user_id)
-{
-    QJsonObject json;
-    json["type"] = "getFriendList";
-    json["user_id"] = user_id;
-    QJsonDocument doc(json);
-    m_pProtocol->sendMessage(doc.toJson());
-}
+//void Core::getFriendList(int user_id)
+//{
+//    QJsonObject json;
+//    json["type"] = "getFriendList";
+//    json["user_id"] = user_id;
+//    QJsonDocument doc(json);
+//    m_pProtocol->sendMessage(doc.toJson());
+//}
 
 void Core::getDataRequest(int user_id)
 {
@@ -142,6 +154,38 @@ void Core::UpdateDetialData(int detail_id, QString column_name, QVariant newValu
     json["value"] = QJsonValue::fromVariant(newValue);
     QJsonDocument doc(json);
     m_pProtocol->sendMessage(doc.toJson(QJsonDocument::Compact));
+}
+
+void Core::UpdateCategoryData(category_info newData)
+{
+    QJsonObject json;
+    json["type"] = "updateCategoryData";
+    json["category_id"] = newData.category_id;
+    json["category_name"] = newData.category_name;
+    json["is_income"] = newData.is_income;
+    // 无需family_id
+    QJsonDocument doc(json);
+    m_pProtocol->sendMessage(doc.toJson());
+}
+
+void Core::insertCategoryData(category_info newData, int family_id)
+{
+    QJsonObject json;
+    json["type"] = "insertCategoryData";
+    json["category_name"] = newData.category_name;
+    json["is_income"] = newData.is_income;
+    json["family_id"] = family_id; // 分类所属家庭
+    QJsonDocument doc(json);
+    m_pProtocol->sendMessage(doc.toJson());
+}
+
+void Core::deleteCategoryData(int category_id)
+{
+    QJsonObject json;
+    json["type"] = "deleteCategoryData";
+    json["category_id"] = category_id;
+    QJsonDocument doc(json);
+    m_pProtocol->sendMessage(doc.toJson());
 }
 
 void Core::insertDetialData(int family_id, int user_id, int category_id, QString description, double amount, QString transaction_date)
@@ -185,7 +229,7 @@ void Core::getFamilyUserList(int family_id)
     m_pProtocol->sendMessage(doc.toJson());
 }
 
-void Core::getDataRequestEx(int user_id, QString keyword, QVector<user_info> family_user_list, bool search_all_time, searchType type, bool search_time_all, QDateTime start_time, QDateTime end_time)
+void Core::getDataRequestEx(int user_id, QString keyword, QVector<category_info> category_list, QVector<user_info> family_user_list, bool search_all_time, searchType type, bool search_time_all, QDateTime start_time, QDateTime end_time)
 {
     if (family_user_list.size() == 0)
     {
@@ -211,6 +255,14 @@ void Core::getDataRequestEx(int user_id, QString keyword, QVector<user_info> fam
         json["start_time"] = start_time.toString("yyyy-MM-dd hh:mm:ss");
         json["end_time"] = end_time.toString("yyyy-MM-dd hh:mm:ss");
     }
+    QJsonArray category_list_json;
+    for (int i = 0; i < category_list.size(); i++)
+    {
+        QJsonObject category;
+        category["category_id"] = category_list[i].category_id;
+        category_list_json.append(category);
+    }
+    json["category_list"] = category_list_json;
 
     QJsonArray family_user_list_json;
     for (int i = 0; i < family_user_list.size(); i++)
@@ -319,4 +371,16 @@ void Core::ProcessGetFamilyUserList(QJsonObject json)
         users.push_back(user);
     }
     emit ReceiveGetFamilyUserList(users);
+}
+
+void Core::ProcessUpdateCategoryData(QJsonObject json)
+{
+}
+
+void Core::ProcessInsertCategoryData(QJsonObject json)
+{
+}
+
+void Core::ProcessDeleteCategoryData(QJsonObject json)
+{
 }

@@ -2,10 +2,10 @@
 
 #include "ui/HomeWealth/page/page_edit/page_edit.h"
 #include "ui/HomeWealth/page/page_main/page_main.h"
+#include "ui/HomeWealth/page/page_category/page_category.h"
 #include "ui_HomeWealth.h"
 #include <QtWidgets/QMainWindow>
 #include <core/core.h>
-
 class HomeWealth : public QMainWindow
 {
     Q_OBJECT
@@ -16,7 +16,8 @@ class HomeWealth : public QMainWindow
     enum PageType
     {
         main,
-        edit
+        edit,
+        category
     };
     void addPage(PageType page);
     void setPage(PageType page);
@@ -28,10 +29,10 @@ class HomeWealth : public QMainWindow
     user_info m_user_info;
     family_info m_family_info;
   public slots:
-    void onLoginSuccess(QString username, int user_id,bool is_admin,int family_id);
+    void onLoginSuccess(QString username, int user_id, bool is_admin, int family_id);
   private slots:
     void onListItemClicked(QListWidgetItem *item);
     void onDisconnected();
-signals:
+  signals:
     void backToLogin();
 };

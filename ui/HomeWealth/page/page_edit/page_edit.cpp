@@ -317,13 +317,33 @@ void page_edit::on_pushButton_searchUser_selectFromFamily_clicked()
 void page_edit::on_pushButton_searchCategory_selectFromCategoryList_clicked()
 {
     // 创建并显示多选对话框
+    if (m_category_info.isEmpty())
+    {
+        QMessageBox::information(this, "提示", "分类列表为空！");
+        return;
+    }
+    dialog_multiSelect_for_category dialog(m_category_info, m_selected_category, this);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        m_selected_category = dialog.getSelectedCategory();
 
+        // 显示选中的分类
+        QStringList selectedNames;
+        for (const auto &category : m_selected_category)
+        {
+            selectedNames << category.category_name;
+        }
+        QString selectedText = selectedNames.join(", ");
+        // QMessageBox::information(this, "已选择的分类", selectedText);
+        on_toolButton_search_clicked();
+    }
 }
 
 void page_edit::on_toolButton_search_clicked()
 {
     QString keyword = ui.lineEdit_search_keyword->text();
     QVector<user_info> search_selectedUsers;
+    QVector<category_info> search_selectedCategory;
     searchType search_type;
     bool search_time_all = ui.checkBox_searchTime_all->isChecked();
     QDateTime search_time_from;
@@ -362,8 +382,18 @@ void page_edit::on_toolButton_search_clicked()
     {
         search_selectedUsers = m_selected_family_user;
     }
+
+    // 判断是否只搜索某些分类
+    if (ui.checkBox_searchCategory_selectAllCategory->isChecked())
+    {
+        search_selectedCategory = m_category_info;
+    }
+    else
+    {
+        search_selectedCategory = m_selected_category;
+    }
     // 发送请求
-    m_core->getDataRequestEx(m_user_info.user_id, keyword, search_selectedUsers, search_time_all, search_type, search_time_all, search_time_from, search_time_to);
+    m_core->getDataRequestEx(m_user_info.user_id, keyword, search_selectedCategory, search_selectedUsers, search_time_all, search_type, search_time_all, search_time_from, search_time_to);
 }
 
 void page_edit::onRadioButtonClicked()
@@ -374,4 +404,17 @@ void page_edit::onRadioButtonClicked()
 void page_edit::on_lineEdit_search_keyword_textChanged()
 {
     on_toolButton_search_clicked();
+}
+
+void page_edit::on_checkBox_searchCategory_selectAllCategory_clicked()
+{
+    if (ui.checkBox_searchCategory_selectAllCategory->isChecked())
+    {
+        ui.pushButton_searchCategory_selectFromCategoryList->setEnabled(false);
+        on_toolButton_search_clicked();
+    }
+    else
+    {
+        ui.pushButton_searchCategory_selectFromCategoryList->setEnabled(true);
+    }
 }

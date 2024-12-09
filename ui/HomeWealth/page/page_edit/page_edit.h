@@ -3,6 +3,7 @@
 #include "./dialog_input/dialog_input.h"
 #include "Core/core.h"
 #include "dialog_multiSelect_for_familyUser/dialog_multiSelect_for_familyUser.h"
+#include "dialog_multiSelect_for_category/dialog_multiSelect_for_category.h"
 #include "ui_page_edit.h"
 #include <QStandardItemModel>
 #include <QWidget>
@@ -31,6 +32,7 @@ class page_edit : public QWidget
     void on_toolButton_search_clicked();
     void onRadioButtonClicked();
     void on_lineEdit_search_keyword_textChanged();
+    void on_checkBox_searchCategory_selectAllCategory_clicked();
   private:
     Ui::page_editClass ui;
     Core *m_core;
@@ -41,6 +43,7 @@ class page_edit : public QWidget
     QVector<user_info> m_selected_family_user;
     QVector<category_info> m_category_info;
     QVector<category_info> m_selected_category;
+
 
     void setupTableView();
 };

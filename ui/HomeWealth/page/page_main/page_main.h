@@ -24,3 +24,4 @@ class page_main : public QWidget
 
     Ui::page_mainClass ui;
 };
+ 

@@ -22,14 +22,30 @@ class Core : public QObject
 
     void login(QString username, QString password);
     void registerUser(QString username, QString password);
-    void getFriendList(int user_id);
+    // void getFriendList(int user_id);
+    //  项目分类的操作
+    void getCategory(int family_id);
+    void UpdateCategoryData(category_info newData);
+    void insertCategoryData(category_info newData, int family_id);
+    void deleteCategoryData(int category_id);
+    // 明细数据的操作
     void getDataRequest(int user_id); // 请求数据
     void UpdateDetialData(int detail_id, QString column_name, QVariant newValue);
     void insertDetialData(int family_id, int user_id, int category_id, QString description, double amount, QString transaction_date);
-    void getCategory(int family_id);
     void deleteDetialData(int detail_id);
+    void getDataRequestEx(
+        int user_id,
+        QString keyword,
+        QVector<category_info> category_list,
+        QVector<user_info> family_user_list,
+        bool search_all_time,
+        searchType type,
+        bool search_time_all,
+        QDateTime start_time = QDateTime(),
+        QDateTime end_time = QDateTime()
+    );
+    // 家庭成员的操作
     void getFamilyUserList(int family_id);
-    void getDataRequestEx(int user_id, QString keyword,QVector<user_info> family_user_list, bool search_all_time, searchType type, bool search_time_all, QDateTime start_time = QDateTime(), QDateTime end_time = QDateTime());
     // void sendMessage(message_info message);
     // 处理接收到的消息,msg是接收到的json消息
     void processLogin(QJsonObject msg_json);
@@ -44,11 +60,12 @@ class Core : public QObject
     void processGetDataResponse(QJsonObject json); // 处理数据响应
     void processGetDataResponseEx(QJsonObject json);
     void ProcessInsertDetialData(QJsonObject json);
-
     void ProcessGetCategory(QJsonObject json);
     void ProcessDeleteDetialData(QJsonObject json);
     void ProcessGetFamilyUserList(QJsonObject json);
-
+    void ProcessUpdateCategoryData(QJsonObject json);
+    void ProcessInsertCategoryData(QJsonObject json);
+    void ProcessDeleteCategoryData(QJsonObject json);
   private slots:
     void onReceiveNewMessage(QString message);
   signals:
@@ -60,9 +77,12 @@ class Core : public QObject
     void ReceiveRegisterResult(bool result);                                                           // 注册结果
     void insertDetialDataError();                                                                      // 插入数据失败
     void signal_disconnect();                                                                          // 断开连接
-    void ReceiveGetCategory(QVector<category_info> categories);                                        // 获取分类
+    void ReceiveGetCategory(QVector<category_info> categories);                                        // 获取分类，提供给page_edit与page_category使用
     void ReceiveDeleteDetialData();                                                                    // 删除数据
     void ReceiveGetFamilyUserList(QVector<user_info> users);                                           // 获取家庭成员
+    void ReceiveUpdateCategoryData();                                                                  // 更新分类
+    void ReceiveInsertCategoryData();                                                                  // 插入分类
+    void ReceiveDeleteCategoryData();                                                                  // 删除分类
     // void ReceiveGetFriendList(QVector<friend_info> friends);
     // void ReceiveUserMessage(message_info message);
 };

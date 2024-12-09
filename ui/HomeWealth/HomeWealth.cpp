@@ -29,13 +29,17 @@ void HomeWealth::addPage(PageType page)
         widget = new page_main(this); // 创建主页面
         alias = "Main Page";          // 设置页面别名
         break;
-    //case PageType::input:
-    //    widget = new page_input(this);
-    //    alias = "Input Page"; // 设置页面别名
-    //    break;
+    // case PageType::input:
+    //     widget = new page_input(this);
+    //     alias = "Input Page"; // 设置页面别名
+    //     break;
     case PageType::edit:
-        widget = new page_edit(m_core,m_user_info, this); // 创建 page_edit 页面
+        widget = new page_edit(m_core, m_user_info, this); // 创建 page_edit 页面
         alias = "Edit Page";
+        break;
+    case PageType::category:
+        widget = new page_category(m_core, m_user_info,this); // 创建 page_category 页面
+        alias = "Category Page";
         break;
     default:
         return; // 未知页面类型
@@ -67,9 +71,10 @@ void HomeWealth::onLoginSuccess(QString username, int user_id, bool is_admin, in
     m_user_info.isAdmin = is_admin;
     m_user_info.family_id = family_id;
     m_core->setClientUserInfo(&m_user_info); // 设置用户信息,方便内核使用
-    addPage(PageType::main);  // 添加主页面
-    addPage(PageType::edit);  // 编辑页面
-    setPage(PageType::main);  // 设置主页面
+    addPage(PageType::main);                 // 添加主页面
+    addPage(PageType::edit);                 // 编辑页面
+    addPage(PageType::category);             // 添加类别页面
+    setPage(PageType::main);                 // 设置主页面
     this->show();
 }
 
