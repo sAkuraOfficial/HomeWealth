@@ -2,7 +2,7 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 
-dialog_multiSelect_for_category::dialog_multiSelect_for_category(const QVector<category_info> &categoryList, const QVector<category_info> &preSelectedCategory , QWidget *parent)
+dialog_multiSelect_for_category::dialog_multiSelect_for_category(const QVector<category_summary> &categoryList, const QVector<category_summary> &preSelectedCategory, QWidget *parent)
     : QDialog(parent),
       listWidget(new QListWidget(this)),
       okButton(new QPushButton("确定", this)),
@@ -54,7 +54,7 @@ dialog_multiSelect_for_category::dialog_multiSelect_for_category(const QVector<c
         selectedCategory.clear(); // 清空之前的选择
         for (auto item : selectedItems)
         {
-            category_info category;
+            category_summary category;
             category.category_name = item->text();
             category.category_id = item->data(Qt::UserRole).toInt();
             // 其他字段根据需要设置
@@ -71,7 +71,7 @@ dialog_multiSelect_for_category::~dialog_multiSelect_for_category()
     // 不需要手动删除子控件，Qt 会自动管理
 }
 
-bool dialog_multiSelect_for_category::isCategoryPreSelected(int category_id, const QVector<category_info> &preSelectedCategory) const
+bool dialog_multiSelect_for_category::isCategoryPreSelected(int category_id, const QVector<category_summary> &preSelectedCategory) const
 {
     for (const auto &category : preSelectedCategory)
     {
@@ -81,7 +81,7 @@ bool dialog_multiSelect_for_category::isCategoryPreSelected(int category_id, con
     return false;
 }
 
-QVector<category_info> dialog_multiSelect_for_category::getSelectedCategory() const
+QVector<category_summary> dialog_multiSelect_for_category::getSelectedCategory() const
 {
     return selectedCategory;
 }

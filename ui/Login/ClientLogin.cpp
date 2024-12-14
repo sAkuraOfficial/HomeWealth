@@ -20,7 +20,8 @@ ClientLogin::ClientLogin(Core *core, QWidget *parent)
     // 登录
     connect(m_core, &Core::ReceiveLoginResult, this, &ClientLogin::onReceiveLoginResult); // 处理登录结果
 
-    m_core->runClient("ws://localhost:2222", 5000); // 连接到服务器，超时时间为5秒
+    // m_core->runClient("ws://114.132.98.222:2222", 5000); // 连接到服务器，超时时间为5秒
+     m_core->runClient("ws://127.0.0.1:2222", 5000); // 连接到服务器，超时时间为5秒
     // 判断qrc资源是否有效:/Client/login_a
     // if (!QFile::exists(":/Client/login_a"))
     //    qDebug() << "qrc资源无效";

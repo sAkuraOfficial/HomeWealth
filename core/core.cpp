@@ -99,6 +99,10 @@ void Core::onReceiveNewMessage(QString message)
     {
         ProcessDeleteCategoryData(json);
     }
+    else if (type == "getCategorySummaryResponse")
+    {
+        ProcessGetCategorySummary(json);
+    }
     else
     {
         Logger::getInstance().log("未知消息类型");
@@ -127,14 +131,14 @@ void Core::registerUser(QString username, QString password)
     m_pProtocol->sendMessage(doc.toJson());
 }
 
-//void Core::getFriendList(int user_id)
+// void Core::getFriendList(int user_id)
 //{
-//    QJsonObject json;
-//    json["type"] = "getFriendList";
-//    json["user_id"] = user_id;
-//    QJsonDocument doc(json);
-//    m_pProtocol->sendMessage(doc.toJson());
-//}
+//     QJsonObject json;
+//     json["type"] = "getFriendList";
+//     json["user_id"] = user_id;
+//     QJsonDocument doc(json);
+//     m_pProtocol->sendMessage(doc.toJson());
+// }
 
 void Core::getDataRequest(int user_id)
 {
@@ -156,7 +160,7 @@ void Core::UpdateDetialData(int detail_id, QString column_name, QVariant newValu
     m_pProtocol->sendMessage(doc.toJson(QJsonDocument::Compact));
 }
 
-void Core::UpdateCategoryData(category_info newData)
+void Core::UpdateCategoryData(category_summary newData)
 {
     QJsonObject json;
     json["type"] = "updateCategoryData";
@@ -168,7 +172,7 @@ void Core::UpdateCategoryData(category_info newData)
     m_pProtocol->sendMessage(doc.toJson());
 }
 
-void Core::insertCategoryData(category_info newData, int family_id)
+void Core::insertCategoryData(category_summary newData, int family_id)
 {
     QJsonObject json;
     json["type"] = "insertCategoryData";
@@ -184,6 +188,41 @@ void Core::deleteCategoryData(int category_id)
     QJsonObject json;
     json["type"] = "deleteCategoryData";
     json["category_id"] = category_id;
+    QJsonDocument doc(json);
+    m_pProtocol->sendMessage(doc.toJson());
+}
+
+void Core::getCategorySummary(int family_id, QVector<int> family_user_id, QVector<int> category_id, searchType type, bool all_time, QDateTime time_A_from, QDateTime time_A_to, QDateTime time_B_from, QDateTime time_B_to)
+{
+    QJsonObject json;
+    json["type"] = "getCategorySummary";
+    json["family_id"] = family_id;
+    QJsonArray family_user_id_json;
+    for (int i = 0; i < family_user_id.size(); i++)
+    {
+        family_user_id_json.append(family_user_id[i]);
+    }
+    json["family_user_id"] = family_user_id_json;
+    QJsonArray category_id_json;
+    for (int i = 0; i < category_id.size(); i++)
+    {
+        category_id_json.append(category_id[i]);
+    }
+    json["category_id"] = category_id_json;
+    if (type == searchType::all)
+        json["search_type"] = "all";
+    else if (type == searchType::income)
+        json["search_type"] = "income";
+    else if (type == searchType::expense)
+        json["search_type"] = "expense";
+    json["all_time"] = all_time;
+    if (!all_time)
+    {
+        json["time_A_from"] = time_A_from.toString("yyyy-MM-dd hh:mm:ss");
+        json["time_A_to"] = time_A_to.toString("yyyy-MM-dd hh:mm:ss");
+        json["time_B_from"] = time_B_from.toString("yyyy-MM-dd hh:mm:ss");
+        json["time_B_to"] = time_B_to.toString("yyyy-MM-dd hh:mm:ss");
+    }
     QJsonDocument doc(json);
     m_pProtocol->sendMessage(doc.toJson());
 }
@@ -229,7 +268,7 @@ void Core::getFamilyUserList(int family_id)
     m_pProtocol->sendMessage(doc.toJson());
 }
 
-void Core::getDataRequestEx(int user_id, QString keyword, QVector<category_info> category_list, QVector<user_info> family_user_list, bool search_all_time, searchType type, bool search_time_all, QDateTime start_time, QDateTime end_time)
+void Core::getDataRequestEx(int user_id, QString keyword, QVector<category_summary> category_list, QVector<user_info> family_user_list, bool search_all_time, searchType type, bool search_time_all, QDateTime start_time, QDateTime end_time)
 {
     if (family_user_list.size() == 0)
     {
@@ -295,13 +334,13 @@ void Core::processRegister(QJsonObject msg_json)
 void Core::processGetDataResponse(QJsonObject json)
 {
     QJsonArray dataArray = json["data"].toArray();
-    emit dataReceived(dataArray);
+    emit ReceiveGetDataResponse_normal_or_ex(dataArray);
 }
 
 void Core::processGetDataResponseEx(QJsonObject json)
 {
     QJsonArray dataArray = json["data"].toArray();
-    emit dataReceived(dataArray); // 与普通的数据请求一样
+    emit ReceiveGetDataResponse_normal_or_ex(dataArray); // 与普通的数据请求一样
 }
 
 void Core::ProcessInsertDetialData(QJsonObject json)
@@ -326,14 +365,15 @@ void Core::ProcessGetCategory(QJsonObject json)
     {
         dataArray = json["data"].toArray();
     }
-    QVector<category_info> categories;
+    QVector<category_summary> categories;
     for (int i = 0; i < dataArray.size(); i++)
     {
         QJsonObject obj = dataArray[i].toObject();
-        category_info category;
+        category_summary category;
         category.category_id = obj["category_id"].toInt();
         category.category_name = obj["category_name"].toString();
         category.is_income = obj["is_income"].toBool();
+        category.amount = obj["amount"].toDouble();
         categories.push_back(category);
     }
     emit ReceiveGetCategory(categories);
@@ -375,6 +415,15 @@ void Core::ProcessGetFamilyUserList(QJsonObject json)
 
 void Core::ProcessUpdateCategoryData(QJsonObject json)
 {
+    bool result = json["result"].toBool();
+    if (result)
+    {
+        emit ReceiveUpdateCategoryData();
+    }
+    else
+    {
+        Logger::getInstance().log("更新分类失败");
+    }
 }
 
 void Core::ProcessInsertCategoryData(QJsonObject json)
@@ -383,4 +432,42 @@ void Core::ProcessInsertCategoryData(QJsonObject json)
 
 void Core::ProcessDeleteCategoryData(QJsonObject json)
 {
+}
+
+void Core::ProcessGetCategorySummary(QJsonObject json)
+{
+    //打印json
+    QJsonDocument doc(json);
+    Logger::getInstance().log(doc.toJson());
+    bool result = json["result"].toBool();
+    if (!result)
+    {
+        QString error = json.contains("error") && json["error"].isString() ? json["error"].toString() : "未知错误";
+        Logger::getInstance().log("获取类别摘要失败: " + error, Logger::ERROR);
+        return;
+    }
+
+    QJsonArray summaryArray = json["summary"].toArray();
+    QVector<QVector<category_summary>> summaries(2); // Two QVector for time_A and time_B
+
+    for (const QJsonValue &val : summaryArray)
+    {
+        if (!val.isObject())
+            continue;
+
+        QJsonObject obj = val.toObject();
+        category_summary summary;
+        summary.category_id = obj["category_id"].toInt();
+        summary.category_name = obj["category_name"].toString();
+        summary.is_income = obj["is_income"].toBool();
+
+        // Separate A and B time data
+        summary.amount = obj["total_amount_A"].toDouble();
+        summaries[0].append(summary); // Add to A
+
+        summary.amount = obj["total_amount_B"].toDouble();
+        summaries[1].append(summary); // Add to B
+    }
+
+    emit ReceiveGetCategorySummary(summaries); // Emit both A and B data
 }

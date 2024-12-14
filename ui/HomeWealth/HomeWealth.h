@@ -6,6 +6,7 @@
 #include "ui_HomeWealth.h"
 #include <QtWidgets/QMainWindow>
 #include <core/core.h>
+#include <AnimatedStackedWidget.hpp>
 class HomeWealth : public QMainWindow
 {
     Q_OBJECT

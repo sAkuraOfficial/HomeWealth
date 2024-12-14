@@ -29,6 +29,8 @@ set(PROJECT_SOURCES
     ui/HomeWealth/HomeWealth.ui
     ui/HomeWealth/HomeWealth.cpp
     ui/HomeWealth/HomeWealth.h
+    #AnimatedStackedWidget
+    ui/HomeWealth/AnimatedStackedWidget/AnimatedStackedWidget.hpp
     # 首页
     ui/HomeWealth/page/page_main/page_main.ui
     ui/HomeWealth/page/page_main/page_main.cpp
@@ -46,10 +48,10 @@ set(PROJECT_SOURCES
     ui/HomeWealth/page/page_edit/delegate_combox/delegate_combox.cpp
     ui/HomeWealth/page/page_edit/delegate_combox/delegate_combox.h
     #多选对话框
-    ui/HomeWealth/page/page_edit/dialog_multiSelect_for_familyUser/dialog_multiSelect_for_familyUser.cpp
-    ui/HomeWealth/page/page_edit/dialog_multiSelect_for_familyUser/dialog_multiSelect_for_familyUser.h
-    ui/HomeWealth/page/page_edit/dialog_multiSelect_for_category/dialog_multiSelect_for_category.cpp
-    ui/HomeWealth/page/page_edit/dialog_multiSelect_for_category/dialog_multiSelect_for_category.h
+    ui/HomeWealth/page/dialog_multiSelect_for_familyUser/dialog_multiSelect_for_familyUser.cpp
+    ui/HomeWealth/page/dialog_multiSelect_for_familyUser/dialog_multiSelect_for_familyUser.h
+    ui/HomeWealth/page/dialog_multiSelect_for_category/dialog_multiSelect_for_category.cpp
+    ui/HomeWealth/page/dialog_multiSelect_for_category/dialog_multiSelect_for_category.h
     #分类管理页面
     ui/HomeWealth/page/page_category/page_category.ui
     ui/HomeWealth/page/page_category/page_category.cpp
@@ -84,6 +86,8 @@ set_target_properties(HomeWealth
 target_include_directories(HomeWealth
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/HomeWealth/AnimatedStackedWidget
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/HomeWealth/page
 )
 target_link_libraries(HomeWealth
     PUBLIC

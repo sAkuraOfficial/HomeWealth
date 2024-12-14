@@ -17,11 +17,11 @@ class page_edit : public QWidget
     ~page_edit();
 
   private slots:
-    void populateTable(QJsonArray dataArray);
+    void onReceiveGetDataResponse_normal_or_ex(QJsonArray dataArray);
     void onItemChanged(QStandardItem *item);
     void onAddRowClicked();                                               // 新增槽函数
     void onInsertDataResponse(QJsonObject json);                          // 处理插入数据的响应
-    void onGetCategory(QVector<category_info> categories);                // 处理获取分类的响应
+    void onGetCategory(QVector<category_summary> categories);             // 处理获取分类的响应
     void onReceiveGetFamilyUserList(QVector<user_info> family_user_list); // 接收家庭成员列表
     void on_pushButton_deleteRow_clicked();                               // 删除行
     void on_pushButton_refresh_clicked();                                 // 刷新
@@ -33,6 +33,7 @@ class page_edit : public QWidget
     void onRadioButtonClicked();
     void on_lineEdit_search_keyword_textChanged();
     void on_checkBox_searchCategory_selectAllCategory_clicked();
+    void onUpdate_UI_under_summary();
   private:
     Ui::page_editClass ui;
     Core *m_core;
@@ -41,9 +42,12 @@ class page_edit : public QWidget
     user_info m_user_info;
     QVector<user_info> m_family_user_list;
     QVector<user_info> m_selected_family_user;
-    QVector<category_info> m_category_info;
-    QVector<category_info> m_selected_category;
-
-
+    QVector<category_summary> m_category_info;
+    QVector<category_summary> m_selected_category;
+    double m_income = 0;
+    double m_expense = 0;
+    double m_all_income = 0;
     void setupTableView();
+signals:
+    void update_UI_under_summary();
 };

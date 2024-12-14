@@ -149,6 +149,21 @@ QLineEdit,QComboBox,QDateTimeEdit
          <number>0</number>
         </property>
         <item>
+         <widget class="QRadioButton" name="radioButton_expense">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>支出</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QRadioButton" name="radioButton_income">
           <property name="font">
            <font>
@@ -159,19 +174,7 @@ QLineEdit,QComboBox,QDateTimeEdit
            <string>收入</string>
           </property>
           <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="radioButton_expense">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>支出</string>
+           <bool>false</bool>
           </property>
          </widget>
         </item>

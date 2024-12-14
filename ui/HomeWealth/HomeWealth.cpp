@@ -60,7 +60,8 @@ void HomeWealth::setPage(PageType page)
 {
     if (m_pages.find(page) != m_pages.end())
     {
-        ui.stackedWidget->setCurrentWidget(m_pages[page].first);
+        //ui.stackedWidget->setCurrentWidget(m_pages[page].first);
+        ui.stackedWidget->slideToIndex(ui.stackedWidget->indexOf(m_pages[page].first)); // 使用动画切换页面
     }
 }
 

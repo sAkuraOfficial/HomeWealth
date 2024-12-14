@@ -25,9 +25,20 @@ class Core : public QObject
     // void getFriendList(int user_id);
     //  项目分类的操作
     void getCategory(int family_id);
-    void UpdateCategoryData(category_info newData);
-    void insertCategoryData(category_info newData, int family_id);
+    void UpdateCategoryData(category_summary newData);
+    void insertCategoryData(category_summary newData, int family_id);
     void deleteCategoryData(int category_id);
+    void getCategorySummary(
+        int family_id,
+        QVector<int> family_user_id,
+        QVector<int> category_id,
+        searchType type,
+        bool all_time,
+        QDateTime time_A_from,
+        QDateTime time_A_to,
+        QDateTime time_B_from,
+        QDateTime time_B_to
+    );
     // 明细数据的操作
     void getDataRequest(int user_id); // 请求数据
     void UpdateDetialData(int detail_id, QString column_name, QVariant newValue);
@@ -36,7 +47,7 @@ class Core : public QObject
     void getDataRequestEx(
         int user_id,
         QString keyword,
-        QVector<category_info> category_list,
+        QVector<category_summary> category_list,
         QVector<user_info> family_user_list,
         bool search_all_time,
         searchType type,
@@ -66,10 +77,11 @@ class Core : public QObject
     void ProcessUpdateCategoryData(QJsonObject json);
     void ProcessInsertCategoryData(QJsonObject json);
     void ProcessDeleteCategoryData(QJsonObject json);
+    void ProcessGetCategorySummary(QJsonObject json);
   private slots:
     void onReceiveNewMessage(QString message);
   signals:
-    void dataReceived(QJsonArray dataArray);                                                           // 当接收到数据时发射
+    void ReceiveGetDataResponse_normal_or_ex(QJsonArray dataArray);                                                           // 当接收到数据时发射
     void beginConnect();                                                                               // 发送开始连接信号，用于ui显示加载动画
     void ConnectTimeOut();                                                                             // 连接超时
     void ConnectSuccess();                                                                             // 连接成功
@@ -77,12 +89,13 @@ class Core : public QObject
     void ReceiveRegisterResult(bool result);                                                           // 注册结果
     void insertDetialDataError();                                                                      // 插入数据失败
     void signal_disconnect();                                                                          // 断开连接
-    void ReceiveGetCategory(QVector<category_info> categories);                                        // 获取分类，提供给page_edit与page_category使用
+    void ReceiveGetCategory(QVector<category_summary> categories);                                     // 获取分类，提供给page_edit与page_category使用
     void ReceiveDeleteDetialData();                                                                    // 删除数据
     void ReceiveGetFamilyUserList(QVector<user_info> users);                                           // 获取家庭成员
     void ReceiveUpdateCategoryData();                                                                  // 更新分类
     void ReceiveInsertCategoryData();                                                                  // 插入分类
     void ReceiveDeleteCategoryData();                                                                  // 删除分类
+    void ReceiveGetCategorySummary(QVector<QVector<category_summary>>);                                // 获取分类汇总
     // void ReceiveGetFriendList(QVector<friend_info> friends);
     // void ReceiveUserMessage(message_info message);
 };

@@ -18,13 +18,14 @@ page_edit::page_edit(Core *core, user_info user_info, QWidget *parent)
     ui.DateEdit_searchTime_To->setDate(QDate::currentDate());
 
     // 连接 core 的 dataReceived 信号到 populateTable 槽
-    connect(m_core, &Core::dataReceived, this, &page_edit::populateTable);
+    connect(m_core, &Core::ReceiveGetDataResponse_normal_or_ex, this, &page_edit::onReceiveGetDataResponse_normal_or_ex);
     connect(ui.pushButton_addRow, &QPushButton::clicked, this, &page_edit::onAddRowClicked);
     connect(m_core, &Core::ReceiveGetCategory, this, &page_edit::onGetCategory);
     connect(m_core, &Core::ReceiveGetFamilyUserList, this, &page_edit::onReceiveGetFamilyUserList);
     connect(ui.radioButton_selectType_all, &QRadioButton::clicked, this, &page_edit::onRadioButtonClicked);
     connect(ui.radioButton_selectType_incmome, &QRadioButton::clicked, this, &page_edit::onRadioButtonClicked);
     connect(ui.radioButton_selectType_expense, &QRadioButton::clicked, this, &page_edit::onRadioButtonClicked);
+    connect(this, &page_edit::update_UI_under_summary, this, &page_edit::onUpdate_UI_under_summary);
     // 请求数据
     m_core->getFamilyUserList(m_user_info.family_id); // 请求家庭成员列表
     m_core->getCategory(m_user_info.family_id);       // 请求分类数据
@@ -42,7 +43,7 @@ void page_edit::setupTableView()
     ui.tableView->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
 
     // 设置表头
-    QStringList headers = {"明细ID", "家庭ID", "用户ID", "分类ID", "用户名", "分类名", "明细内容", "金额", "修改日期"};
+    QStringList headers = {"明细ID", "家庭ID", "用户ID", "分类ID", "用户名", "分类名", "项目类型", "明细内容", "金额", "修改日期"};
     model->setHorizontalHeaderLabels(headers);
     ui.tableView->setColumnHidden(0, true); // 隐藏 'detail_id' 列
     ui.tableView->setColumnHidden(1, true); // 隐藏 'family_id' 列
@@ -64,10 +65,13 @@ void page_edit::setupTableView()
     connect(model, &QStandardItemModel::itemChanged, this, &page_edit::onItemChanged);
 }
 
-void page_edit::populateTable(QJsonArray dataArray)
+void page_edit::onReceiveGetDataResponse_normal_or_ex(QJsonArray dataArray)
 {
     disconnect(model, &QStandardItemModel::itemChanged, this, &page_edit::onItemChanged);
     model->removeRows(0, model->rowCount()); // 清除现有数据
+    m_expense = 0;
+    m_income = 0;
+    m_all_income = 0;
     for (int i = 0; i < dataArray.size(); ++i)
     {
         QJsonObject record = dataArray[i].toObject();
@@ -78,12 +82,25 @@ void page_edit::populateTable(QJsonArray dataArray)
         rowItems << new QStandardItem(QString::number(record["category_id"].toInt()));
         rowItems << new QStandardItem(record["login_name"].toString());
         rowItems << new QStandardItem(record["category_name"].toString());
+        rowItems << new QStandardItem(record["is_income"].toBool() ? "收入" : "支出");
         rowItems << new QStandardItem(record["description"].toString());
         rowItems << new QStandardItem(QString::number(record["amount"].toDouble()));
         rowItems << new QStandardItem(record["transaction_date"].toString());
         model->appendRow(rowItems);
+        // 编码规范，所有支出、收入均使用正整数
+        double temp_amount = record["amount"].toDouble();
+        bool temp_is_income = record["is_income"].toBool();
+        if (temp_is_income)
+        {
+            m_income += temp_amount;
+        }
+        else
+        {
+            m_expense += temp_amount;
+        }
+        m_all_income = m_income - m_expense;
     }
-
+    emit update_UI_under_summary();
     // 根据需要设置哪些列可编辑
     for (int row = 0; row < model->rowCount(); ++row)
     {
@@ -101,7 +118,7 @@ void page_edit::populateTable(QJsonArray dataArray)
         for (int column = 0; column < model->columnCount(); ++column)
         {
             QStandardItem *item = model->item(row, column);
-            if (column == 1 || column == 2 || column == 3 || column == 4) // 禁止编辑的列
+            if (column == 1 || column == 2 || column == 3 || column == 4 || column == 6) // 禁止编辑的列
             {
                 item->setEditable(false);
             }
@@ -144,16 +161,23 @@ void page_edit::onItemChanged(QStandardItem *item)
         column_name = "login_name";
         break;
     case 6:
-        column_name = "description";
+        column_name = "income_type";
         break;
     case 7:
-        column_name = "amount";
+        column_name = "description";
         break;
     case 8:
+        column_name = "amount";
+        break;
+    case 9:
         column_name = "transaction_date";
         break;
     default:
         return; // 不可编辑的字段或无效的列
+    }
+    if (column_name == "income_type")
+    {
+        return;
     }
     if (column_name == "login_name")
     {
@@ -201,7 +225,7 @@ void page_edit::onInsertDataResponse(QJsonObject json)
 {
 }
 
-void page_edit::onGetCategory(QVector<category_info> categories)
+void page_edit::onGetCategory(QVector<category_summary> categories)
 {
     m_category_info = categories;
     delegate_combox *comboBoxDelegate = new delegate_combox(this);
@@ -343,7 +367,7 @@ void page_edit::on_toolButton_search_clicked()
 {
     QString keyword = ui.lineEdit_search_keyword->text();
     QVector<user_info> search_selectedUsers;
-    QVector<category_info> search_selectedCategory;
+    QVector<category_summary> search_selectedCategory;
     searchType search_type;
     bool search_time_all = ui.checkBox_searchTime_all->isChecked();
     QDateTime search_time_from;
@@ -417,4 +441,11 @@ void page_edit::on_checkBox_searchCategory_selectAllCategory_clicked()
     {
         ui.pushButton_searchCategory_selectFromCategoryList->setEnabled(true);
     }
+}
+
+void page_edit::onUpdate_UI_under_summary()
+{
+    ui.label_summary_income->setText(QString::number(m_income));
+    ui.label_summary_expense->setText(QString::number(m_expense));
+    ui.label_summary_all->setText(QString::number(m_all_income));
 }

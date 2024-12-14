@@ -1,14 +1,20 @@
 #include "dialog_input.h"
 
-dialog_input::dialog_input(user_info user_info,Core *core, QVector<category_info> category_info, QWidget *parent)
+dialog_input::dialog_input(user_info user_info, Core *core, QVector<category_summary> category_info, QWidget *parent)
     : QDialog(parent), m_category_info(category_info), m_core(core), m_user_info(user_info)
 {
     ui.setupUi(this);
     ui.DateEdit->setDate(QDate::currentDate());
+    // 设置radio的默认值
+    ui.radioButton_expense->setChecked(true);
+    ui.radioButton_income->setChecked(false);
+    m_is_income = false;
+
     QVector<QString> categoryNames;
     for (auto category : m_category_info)
     {
-        categoryNames.push_back(category.category_name);
+        if (category.is_income == m_is_income)
+            categoryNames.push_back(category.category_name);
     }
     ui.ComboBox->addItems(categoryNames);
 }
@@ -42,3 +48,47 @@ void dialog_input::on_pushButton_cancel_clicked()
     this->close();
 }
 
+void dialog_input::on_radioButton_expense_clicked()
+{
+    if (m_is_income == false)
+    {
+        // 已经是支出了
+        return;
+    }
+    else
+    {
+        // 状态从income转换为expense
+        m_is_income = false;
+        ui.ComboBox->clear();
+        QVector<QString> categoryNames;
+        for (auto category : m_category_info)
+        {
+            if (category.is_income == m_is_income)
+                categoryNames.push_back(category.category_name);
+        }
+        ui.ComboBox->addItems(categoryNames);
+
+    }
+}
+
+void dialog_input::on_radioButton_income_clicked()
+{
+    if (m_is_income==true)
+    {
+        // 已经是收入了
+        return;
+    }
+    else
+    {
+        // 状态从expense转换为income
+        m_is_income = true;
+        ui.ComboBox->clear();
+        QVector<QString> categoryNames;
+        for (auto category : m_category_info)
+        {
+            if (category.is_income == m_is_income)
+                categoryNames.push_back(category.category_name);
+        }
+        ui.ComboBox->addItems(categoryNames);
+    }
+}
