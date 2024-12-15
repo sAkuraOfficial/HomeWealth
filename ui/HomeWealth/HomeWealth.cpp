@@ -27,19 +27,19 @@ void HomeWealth::addPage(PageType page)
     {
     case PageType::main:
         widget = new page_main(this); // 创建主页面
-        alias = "Main Page";          // 设置页面别名
+        alias = "主页";          // 设置页面别名
         break;
-    // case PageType::input:
-    //     widget = new page_input(this);
-    //     alias = "Input Page"; // 设置页面别名
-    //     break;
     case PageType::edit:
         widget = new page_edit(m_core, m_user_info, this); // 创建 page_edit 页面
-        alias = "Edit Page";
+        alias = "数据编辑";
         break;
     case PageType::category:
-        widget = new page_category(m_core, m_user_info,this); // 创建 page_category 页面
-        alias = "Category Page";
+        widget = new page_category(m_core, m_user_info, this); // 创建 page_category 页面
+        alias = "分类管理";
+        break;
+    case PageType::family:
+        widget = new page_family(m_core, m_user_info, this); // 创建 page_family 页面
+        alias = "家庭管理";
         break;
     default:
         return; // 未知页面类型
@@ -60,7 +60,7 @@ void HomeWealth::setPage(PageType page)
 {
     if (m_pages.find(page) != m_pages.end())
     {
-        //ui.stackedWidget->setCurrentWidget(m_pages[page].first);
+        // ui.stackedWidget->setCurrentWidget(m_pages[page].first);
         ui.stackedWidget->slideToIndex(ui.stackedWidget->indexOf(m_pages[page].first)); // 使用动画切换页面
     }
 }
@@ -75,7 +75,9 @@ void HomeWealth::onLoginSuccess(QString username, int user_id, bool is_admin, in
     addPage(PageType::main);                 // 添加主页面
     addPage(PageType::edit);                 // 编辑页面
     addPage(PageType::category);             // 添加类别页面
+    addPage(PageType::family);               // 添加家庭页面
     setPage(PageType::main);                 // 设置主页面
+
     this->show();
 }
 

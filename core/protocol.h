@@ -14,6 +14,7 @@ class Protocol : public QObject
     QWebSocket *getWebSocket();
     void ConnectToServer(QString ws);
     void sendMessage(QString msg);
+    void disconnect_to_server(); // 主动断开连接
 
   private:
     QWebSocket *m_pWebSocket;

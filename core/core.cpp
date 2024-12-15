@@ -103,6 +103,14 @@ void Core::onReceiveNewMessage(QString message)
     {
         ProcessGetCategorySummary(json);
     }
+    else if (type == "insertUserToFamilyResponse")
+    {
+        ProcessInsertUserToFamily(json);
+    }
+    else if (type == "createInsertUserToFamilyResponse")
+    {
+        ProcessCreateInsertUserToFamily(json);
+    }
     else
     {
         Logger::getInstance().log("未知消息类型");
@@ -264,6 +272,38 @@ void Core::getFamilyUserList(int family_id)
     QJsonObject json;
     json["type"] = "getFamilyUserList";
     json["family_id"] = family_id;
+    QJsonDocument doc(json);
+    m_pProtocol->sendMessage(doc.toJson());
+}
+
+void Core::deleteUserFromFamily(int family_id, int user_id)
+{
+    QJsonObject json;
+    json["type"] = "deleteUserFromFamily";
+    json["family_id"] = family_id;
+    json["user_id"] = user_id;
+    QJsonDocument doc(json);
+    m_pProtocol->sendMessage(doc.toJson());
+}
+
+void Core::insertUserToFamily(int family_id, int user_id)
+{
+    // 从已有用户中添加用户到家庭
+    QJsonObject json;
+    json["type"] = "insertUserToFamily";
+    json["family_id"] = family_id;
+    json["user_id"] = user_id;
+    QJsonDocument doc(json);
+    m_pProtocol->sendMessage(doc.toJson());
+}
+
+void Core::createInsertUserToFamily(int family_id, QString username, QString password)
+{
+    QJsonObject json;
+    json["type"] = "createInsertUserToFamily";
+    json["family_id"] = family_id;
+    json["username"] = username;
+    json["password"] = password;
     QJsonDocument doc(json);
     m_pProtocol->sendMessage(doc.toJson());
 }
@@ -436,7 +476,7 @@ void Core::ProcessDeleteCategoryData(QJsonObject json)
 
 void Core::ProcessGetCategorySummary(QJsonObject json)
 {
-    //打印json
+    // 打印json
     QJsonDocument doc(json);
     Logger::getInstance().log(doc.toJson());
     bool result = json["result"].toBool();
@@ -470,4 +510,46 @@ void Core::ProcessGetCategorySummary(QJsonObject json)
     }
 
     emit ReceiveGetCategorySummary(summaries); // Emit both A and B data
+}
+
+void Core::ProcessInsertUserToFamily(QJsonObject json)
+{
+    bool result = json["result"].toBool();
+    if (result)
+    {
+        emit ReceiveInsertUserToFamily(true, "");
+    }
+    else
+    {
+        Logger::getInstance().log("添加用户到家庭失败");
+        emit ReceiveInsertUserToFamily(false, json["error_msg"].toString());
+    }
+}
+
+void Core::ProcessCreateInsertUserToFamily(QJsonObject json)
+{
+    bool result = json["result"].toBool();
+    if (result)
+    {
+        emit ReceiveCreateAndInsertUserToFamily(true, "");
+    }
+    else
+    {
+        Logger::getInstance().log("创建并添加用户到家庭失败");
+        emit ReceiveCreateAndInsertUserToFamily(false, json["error_msg"].toString());
+    }
+}
+
+void Core::ProcessDeleteUserFromFamily(QJsonObject json)
+{
+    bool result = json["result"].toBool();
+    if (result)
+    {
+        emit ReceiveDeleteUserFromFamily(true, "");
+    }
+    else
+    {
+        Logger::getInstance().log("删除家庭用户失败");
+        emit ReceiveDeleteUserFromFamily(false, json["error_msg"].toString());
+    }
 }

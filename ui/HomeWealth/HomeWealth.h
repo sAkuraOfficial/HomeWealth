@@ -7,6 +7,7 @@
 #include <QtWidgets/QMainWindow>
 #include <core/core.h>
 #include <AnimatedStackedWidget.hpp>
+#include"ui/HomeWealth/page/page_family/page_family.h"
 class HomeWealth : public QMainWindow
 {
     Q_OBJECT
@@ -18,7 +19,8 @@ class HomeWealth : public QMainWindow
     {
         main,
         edit,
-        category
+        category,
+        family
     };
     void addPage(PageType page);
     void setPage(PageType page);

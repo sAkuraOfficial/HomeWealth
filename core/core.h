@@ -57,6 +57,9 @@ class Core : public QObject
     );
     // 家庭成员的操作
     void getFamilyUserList(int family_id);
+    void deleteUserFromFamily(int family_id, int user_id);
+    void insertUserToFamily(int family_id, int user_id);                                   // 把已有用户加入家庭
+    void createInsertUserToFamily(int family_id, QString username, QString password); // 新建用户并插入家庭
     // void sendMessage(message_info message);
     // 处理接收到的消息,msg是接收到的json消息
     void processLogin(QJsonObject msg_json);
@@ -78,6 +81,9 @@ class Core : public QObject
     void ProcessInsertCategoryData(QJsonObject json);
     void ProcessDeleteCategoryData(QJsonObject json);
     void ProcessGetCategorySummary(QJsonObject json);
+    void ProcessInsertUserToFamily(QJsonObject json);
+    void ProcessCreateInsertUserToFamily(QJsonObject json);
+    void ProcessDeleteUserFromFamily(QJsonObject json);
   private slots:
     void onReceiveNewMessage(QString message);
   signals:
@@ -96,6 +102,10 @@ class Core : public QObject
     void ReceiveInsertCategoryData();                                                                  // 插入分类
     void ReceiveDeleteCategoryData();                                                                  // 删除分类
     void ReceiveGetCategorySummary(QVector<QVector<category_summary>>);                                // 获取分类汇总
+    void ReceiveInsertUserToFamily(bool success,QString error_msg);                                                              // 插入家庭成员
+    void ReceiveCreateAndInsertUserToFamily(bool success, QString error_msg);                    // 创建并插入家庭成员
+    void ReceiveDeleteUserFromFamily(bool success, QString error_msg);                                                           // 删除家庭成员
+
     // void ReceiveGetFriendList(QVector<friend_info> friends);
     // void ReceiveUserMessage(message_info message);
 };

@@ -30,12 +30,23 @@ set(PROJECT_SOURCES
     ui/HomeWealth/HomeWealth.cpp
     ui/HomeWealth/HomeWealth.h
     #AnimatedStackedWidget
-    ui/HomeWealth/AnimatedStackedWidget/AnimatedStackedWidget.hpp
+    ui/AnimatedStackedWidget/AnimatedStackedWidget.hpp
+    #RGBBorderWidget
+    ui/RGBBorderWidget/RGBBorderWidget.hpp
     # 首页
     ui/HomeWealth/page/page_main/page_main.ui
     ui/HomeWealth/page/page_main/page_main.cpp
     ui/HomeWealth/page/page_main/page_main.h
-
+    #家庭管理页面
+    ui/HomeWealth/page/page_family/page_family.ui
+    ui/HomeWealth/page/page_family/page_family.cpp
+    ui/HomeWealth/page/page_family/page_family.h
+    #delegate_tableItemAlignCenter
+    ui/HomeWealth/page/page_family/delegate_tableItemAlignCenter/delegate_tableItemAlignCenter.hpp
+    #dialog_insertUser
+    ui/HomeWealth/page/page_family/dialog_insertUser/dialog_insertUser.ui
+    ui/HomeWealth/page/page_family/dialog_insertUser/dialog_insertUser.cpp
+    ui/HomeWealth/page/page_family/dialog_insertUser/dialog_insertUser.h
     # 编辑页面
     ui/HomeWealth/page/page_edit/page_edit.ui
     ui/HomeWealth/page/page_edit/page_edit.cpp
@@ -86,8 +97,9 @@ set_target_properties(HomeWealth
 target_include_directories(HomeWealth
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/HomeWealth/AnimatedStackedWidget
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/AnimatedStackedWidget
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/HomeWealth/page
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui/RGBBorderWidget
 )
 target_link_libraries(HomeWealth
     PUBLIC

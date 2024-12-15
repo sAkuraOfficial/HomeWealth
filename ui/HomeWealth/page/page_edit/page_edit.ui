@@ -614,6 +614,25 @@ QDateTimeEdit
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>lineEdit_search_keyword</tabstop>
+  <tabstop>toolButton_search</tabstop>
+  <tabstop>checkBox_searchTime_all</tabstop>
+  <tabstop>DateEdit_searchTime_From</tabstop>
+  <tabstop>DateEdit_searchTime_To</tabstop>
+  <tabstop>radioButton_selectType_all</tabstop>
+  <tabstop>radioButton_selectType_incmome</tabstop>
+  <tabstop>radioButton_selectType_expense</tabstop>
+  <tabstop>checkBox_searchUser_selectMe</tabstop>
+  <tabstop>pushButton_searchUser_selectFromFamily</tabstop>
+  <tabstop>checkBox_searchCategory_selectAllCategory</tabstop>
+  <tabstop>pushButton_searchCategory_selectFromCategoryList</tabstop>
+  <tabstop>pushButton_addRow</tabstop>
+  <tabstop>pushButton_deleteRow</tabstop>
+  <tabstop>pushButton_refresh</tabstop>
+  <tabstop>pushButton_refresh_2</tabstop>
+  <tabstop>tableView</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

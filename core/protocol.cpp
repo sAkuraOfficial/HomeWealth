@@ -57,3 +57,11 @@ void Protocol::sendMessage(QString msg)
     // Logger::getInstance().log("\n" + msg);
     m_pWebSocket->sendTextMessage(msg);
 }
+
+void Protocol::disconnect_to_server()
+{
+    // 主动断开连接
+    m_pWebSocket->close();
+    
+} 
+
