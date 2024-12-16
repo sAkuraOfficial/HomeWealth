@@ -31,6 +31,7 @@ class HomeWealth : public QMainWindow
     std::map<PageType, std::pair<QWidget *, QString>> m_pages; // 添加页面别名
     user_info m_user_info;
     family_info m_family_info;
+    bool page_create_success = false;
   public slots:
     void onLoginSuccess(QString username, int user_id, bool is_admin, int family_id);
   private slots:

@@ -322,19 +322,6 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_login_test">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>测试登录</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="pushButton_login">
             <property name="minimumSize">
              <size>
@@ -344,6 +331,19 @@
             </property>
             <property name="text">
              <string>确认登录</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_login_test">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>测试账号</string>
             </property>
            </widget>
           </item>
@@ -552,7 +552,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="0,0,0">
+         <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="0,0,0,0,0,0">
           <item>
            <spacer name="horizontalSpacer_19">
             <property name="orientation">
@@ -570,27 +570,47 @@
            </spacer>
           </item>
           <item>
-           <widget class="QCheckBox" name="checkBox_reg">
-            <property name="minimumSize">
+           <spacer name="horizontalSpacer_9">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
              <size>
-              <width>0</width>
-              <height>30</height>
+              <width>40</width>
+              <height>20</height>
              </size>
             </property>
-            <property name="layoutDirection">
-             <enum>Qt::LayoutDirection::LeftToRight</enum>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">#checkBox_reg:hover{
-	color:red;
-}
-
-</string>
-            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButton_normal">
             <property name="text">
-             <string>软件由SakuraOfficial独立开发在Github开源</string>
+             <string>普通用户</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButton_admin">
+            <property name="text">
+             <string>管理员用户</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_10">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
           <item>
            <spacer name="horizontalSpacer_20">

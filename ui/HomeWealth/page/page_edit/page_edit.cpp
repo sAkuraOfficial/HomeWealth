@@ -58,6 +58,9 @@ void page_edit::setupTableView()
     // 设置字体微软雅黑
     ui.tableView->horizontalHeader()->setFont(QFont("Microsoft YaHei", 14));
     ui.tableView->setFont(QFont("Microsoft YaHei", 14));
+    //允许排序
+    ui.tableView->setSortingEnabled(true);
+
     //// 创建并设置 ComboBoxDelegate
     // delegate_combox *comboBoxDelegate = new delegate_combox(this);
     // ui.tableView->setItemDelegateForColumn(4, comboBoxDelegate); // 为 'category_name' 列设置代理
@@ -85,7 +88,11 @@ void page_edit::onReceiveGetDataResponse_normal_or_ex(QJsonArray dataArray)
         rowItems << new QStandardItem(record["is_income"].toBool() ? "收入" : "支出");
         rowItems << new QStandardItem(record["description"].toString());
         rowItems << new QStandardItem(QString::number(record["amount"].toDouble()));
-        rowItems << new QStandardItem(record["transaction_date"].toString());
+        // 格式化日期为 yyyy年MM月dd日
+        QString date = record["transaction_date"].toString();
+        date = date.mid(0, 11);
+        rowItems << new QStandardItem(date);
+        //rowItems << new QStandardItem(record["transaction_date"].toString());
         model->appendRow(rowItems);
         // 编码规范，所有支出、收入均使用正整数
         double temp_amount = record["amount"].toDouble();

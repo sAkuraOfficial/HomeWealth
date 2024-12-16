@@ -27,8 +27,8 @@ void dialog_insertUser::on_pushButton_ok_clicked()
     }
     else
     {
-        QString id = ui.LineEdit_id->text();
-        m_core->insertUserToFamily(m_user_info.family_id, id.toInt());
+        QString user_name = ui.LineEdit_id->text();
+        m_core->insertUserToFamily(m_user_info.family_id, user_name);
     }
 }
 
@@ -53,6 +53,7 @@ void dialog_insertUser::on_radioButton_have_clicked()
 
 void dialog_insertUser::onReceiveInsertUserToFamily_And_ReceiveCreateAndInsertUserToFamily(bool success, QString error_msg)
 {
+    m_core->getFamilyUserList(m_user_info.family_id);
     if (success)
     {
         QMessageBox::information(this, "成功", "添加成功");

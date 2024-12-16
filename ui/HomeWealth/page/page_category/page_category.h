@@ -32,6 +32,7 @@ class page_category : public QWidget
     void on_checkBox_summary_all_family_clicked();
     void on_checkBox_summary_all_category_clicked();
     void onUpdate_UI_under_summary();
+    void on_pushButton_refresh_category_clicked();
 
   private:
     void setupTableView();

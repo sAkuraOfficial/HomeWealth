@@ -69,7 +69,7 @@ QDateTimeEdit
 }</string>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page_one">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -173,6 +173,22 @@ QDateTimeEdit
            </property>
            <property name="text">
             <string>删除分类</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_refresh_category">
+           <property name="font">
+            <font>
+             <pointsize>-1</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>刷新数据</string>
            </property>
           </widget>
          </item>

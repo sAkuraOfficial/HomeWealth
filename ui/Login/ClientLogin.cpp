@@ -9,13 +9,12 @@ ClientLogin::ClientLogin(Core *core, QWidget *parent)
     ui.setupUi(this);
     ui.label_welcome_login->setText("家庭理财管理系统");
     ui.label_welcome_reg->setText("注册");
-    ui.stackedWidget->setCurrentIndex(0);
+    /*   ui.stackedWidget->setCurrentIndex(0);
+       ui.stackedWidget->slideToIndex(0);*/
     isLoginPage = true;
     isBackendPage = false;
-    
+
     animationTimer = new QTimer(this);
-
-
 
     // 连接服务器
     connect(m_core, &Core::beginConnect, this, &ClientLogin::onBeginConnect);                                      // 连接开始时显示加载动画
@@ -25,6 +24,7 @@ ClientLogin::ClientLogin(Core *core, QWidget *parent)
 
     // 登录
     connect(m_core, &Core::ReceiveLoginResult, this, &ClientLogin::onReceiveLoginResult); // 处理登录结果
+    connect(m_core, &Core::ReceiveRegisterResult, this, &ClientLogin::onReceiveRegisterResult);
 
     // m_core->runClient("ws://114.132.98.222:2222", 5000); // 连接到服务器，超时时间为5秒
     // m_core->runClient("ws://127.0.0.1:2222", 5000); // 连接到服务器，超时时间为5秒
@@ -62,6 +62,21 @@ ClientLogin::ClientLogin(Core *core, QWidget *parent)
     ui.lineEdit_ip->setText(m_backend_ip);
     ui.lineEdit_port->setText(m_backend_port);
     m_core->runClient("ws://" + m_backend_ip + ":" + m_backend_port, 5000); // 连接到服务器，超时时间为5秒
+
+    // 从login.json中读取数据
+    QFile file_login("login.json");
+    if (file_login.open(QIODevice::ReadOnly))
+    {
+        QByteArray data = file_login.readAll();
+        QJsonDocument doc = QJsonDocument::fromJson(data);
+        QJsonObject json = doc.object();
+        ui.checkBox_autoLogin->setChecked(json.value("autoLogin").toBool());
+        ui.checkBox_rememberPwd->setChecked(json.value("rememberPwd").toBool());
+        ui.lineEdit_id->setText(json.value("user_name").toString());
+        ui.lineEdit_pwd->setText(json.value("password").toString());
+        file_login.close();
+    }
+    // 若不存在则不管
 
     movie = new QMovie(":/Client/login_a");
     movie_b = new QMovie(":/Client/login_b");
@@ -121,7 +136,6 @@ bool ClientLogin::eventFilter(QObject *watched, QEvent *event)
                     if (isLoginPage)
                     {
                         ui.stackedWidget->slideToIndex(0); // 登录
-						
                     }
                     else
                     {
@@ -191,12 +205,21 @@ void ClientLogin::on_pushButton_login_clicked()
 
 void ClientLogin::on_pushButton_reg_clicked()
 {
-    m_core->registerUser(ui.lineEdit_reg_id->text(), ui.lineEdit_reg_pwd->text());
+    bool is_admin;
+    if (ui.radioButton_admin->isChecked())
+    {
+        is_admin = true;
+    }
+    else
+    {
+        is_admin = false;
+    }
+    m_core->registerUser(ui.lineEdit_reg_id->text(), ui.lineEdit_reg_pwd->text(), is_admin);
 }
 
 void ClientLogin::on_pushButton_login_test_clicked()
 {
-    m_core->login("a", "a");
+    m_core->login("周子豪", "123456");
 }
 
 void ClientLogin::onBeginConnect()
@@ -247,6 +270,25 @@ void ClientLogin::onReceiveLoginResult(bool result, QString username, int user_i
     if (result)
     {
         emit LoginSuccess(username, user_id, is_admin, family_id); // 传递登陆成功信号
+        //写出login.json
+        QJsonObject json;
+        json["autoLogin"] = ui.checkBox_autoLogin->isChecked();
+        json["rememberPwd"] = ui.checkBox_rememberPwd->isChecked();
+        json["user_name"] = ui.lineEdit_id->text();
+        json["password"] = ui.lineEdit_pwd->text();
+        QJsonDocument doc;
+        doc.setObject(json);
+        QFile file("login.json");
+        if (file.open(QIODevice::WriteOnly))
+        {
+            file.write(doc.toJson());
+            file.close();
+        }
+        else
+        {
+            qDebug() << "打开文件失败";
+        }
+
         this->close();                                             // 隐藏当前窗口
     }
     else
@@ -254,6 +296,21 @@ void ClientLogin::onReceiveLoginResult(bool result, QString username, int user_i
         // 登录失败
         ui.label_link_status->setText("服务器状态：登录失败");
         ui.lineEdit_pwd->clear();
+    }
+}
+
+void ClientLogin::onReceiveRegisterResult(bool result, int user_id)
+{
+    if (result)
+    {
+        ui.label_link_status->setText("注册成功");
+        ui.stackedWidget->slideToIndex(0); // 注册成功后切换到登录页面
+        ui.lineEdit_id->setText(ui.lineEdit_reg_id->text());
+        ui.lineEdit_pwd->setText(ui.lineEdit_reg_pwd->text());
+    }
+    else
+    {
+        ui.label_link_status->setText("注册失败");
     }
 }
 
@@ -280,4 +337,71 @@ void ClientLogin::on_pushButton_set_backend_ip_clicked()
     }
     m_core->getProtocol()->disconnect_to_server();
     m_core->runClient("ws://" + ip + ":" + port, 5000); // 连接到服务器，超时时间为5秒
+}
+
+void ClientLogin::on_checkBox_autoLogin_clicked()
+{
+    if (ui.checkBox_autoLogin->isChecked())
+    {
+        ui.checkBox_rememberPwd->setChecked(true);
+    }
+    else
+    {
+        // 不需要改变记住密码状态
+    }
+    // 在运行目录下写出:login.json
+    QJsonObject json;
+    json["autoLogin"] = ui.checkBox_autoLogin->isChecked();
+    json["rememberPwd"] = ui.checkBox_rememberPwd->isChecked();
+    json["user_name"] = ui.lineEdit_id->text();
+    json["password"] = ui.lineEdit_pwd->text();
+    QJsonDocument doc;
+    doc.setObject(json);
+    QFile file("login.json");
+    if (file.open(QIODevice::WriteOnly))
+    {
+        file.write(doc.toJson());
+        file.close();
+    }
+    else
+    {
+        qDebug() << "打开文件失败";
+    }
+}
+
+void ClientLogin::on_checkBox_rememberPwd_clicked()
+{
+    // 等待写出的数据
+    QString user_name = "";
+    QString password = "";
+    if (ui.checkBox_rememberPwd->isChecked())
+    {
+        // 不需要改变自动登录状态
+        user_name = ui.lineEdit_id->text();
+        password = ui.lineEdit_pwd->text();
+    }
+    else
+    {
+        ui.checkBox_autoLogin->setChecked(false);
+        user_name = "";
+        password = "";
+    }
+    // 在运行目录下写出:login.json
+    QJsonObject json;
+    json["autoLogin"] = ui.checkBox_autoLogin->isChecked();
+    json["rememberPwd"] = ui.checkBox_rememberPwd->isChecked();
+    json["user_name"] = user_name;
+    json["password"] = password;
+    QJsonDocument doc;
+    doc.setObject(json);
+    QFile file("login.json");
+    if (file.open(QIODevice::WriteOnly))
+    {
+        file.write(doc.toJson());
+        file.close();
+    }
+    else
+    {
+        qDebug() << "打开文件失败";
+    }
 }

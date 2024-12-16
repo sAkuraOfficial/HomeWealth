@@ -35,7 +35,10 @@ class ClientLogin : public QMainWindow
     void onConnectSuccess();                 // 连接成功
     void onDisconnected();
     void onReceiveLoginResult(bool result, QString username, int user_id, bool is_admin, int family_id); // 处理登录结果
+    void onReceiveRegisterResult(bool result, int user_id);                                              // 处理注册结果
     void on_pushButton_set_backend_ip_clicked();                                                         // 设置后端IP按钮
+    void on_checkBox_autoLogin_clicked();                                                                // 自动登录复选框
+    void on_checkBox_rememberPwd_clicked();
 
   signals:
     void LoginSuccess(QString username, int user_id, bool is_admin, int family_id); // 登陆成功，显示聊天窗口，本信号提供给主窗口使用

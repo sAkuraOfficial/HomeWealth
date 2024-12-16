@@ -9,16 +9,25 @@ page_family::page_family(Core *core, user_info user, QWidget *parent)
     ui.label_profile->setFixedSize(75, 75);
     ui.label_profile->setPixmap(QPixmap(":/Client/profile"));
     ui.label_show_login_name->setText(m_user_info.username);
-    ui.label_show_family_id->setText("所属家庭号：" + QString::number(m_user_info.family_id));
+    if (m_user_info.family_id == -1)
+    {
+        ui.label_show_family_id->setText("您还未加入家庭！");
+    }
+    else
+    {
+        ui.label_show_family_id->setText("所属家庭号：" + QString::number(m_user_info.family_id));
+    }
+
     ui.label_user_type->setText(m_user_info.isAdmin ? "管理员" : "普通用户");
-    //设置图片填充到label中
+    // 设置图片填充到label中
     ui.label_profile->setScaledContents(true);
     // 设置label的大小
-    ui.rgbWidget->layout()->setContentsMargins(3,3,3,3);
+    ui.rgbWidget->layout()->setContentsMargins(3, 3, 3, 3);
     ui.rgbWidget->setBorderWidth(3);
     ui.rgbWidget->setAnimationInterval(1);
     setupTable();
     connect(m_core, &Core::ReceiveGetFamilyUserList, this, &page_family::onReceiveGetFamilyUserList);
+    connect(m_core, &Core::ReceiveDeleteUserFromFamily, this, &page_family::onReceiveDeleteUserFromFamily);
 }
 
 page_family::~page_family()
@@ -27,13 +36,37 @@ page_family::~page_family()
 
 void page_family::on_pushButton_addRow_clicked()
 {
-    dialog_insertUser dialog(m_core, m_user_info, this);
-    dialog.exec();
-
+    if (m_user_info.isAdmin)
+    {
+        dialog_insertUser dialog(m_core, m_user_info, this);
+        dialog.exec();
+    }
+    else
+    {
+        QMessageBox::warning(this, "错误", "您还不是管理员，权限不足");
+    }
 }
 
 void page_family::on_pushButton_deleteRow_clicked()
 {
+    if (m_user_info.isAdmin)
+    {
+        QModelIndex index = ui.tableView->currentIndex();
+        if (index.isValid())
+        {
+            int row = index.row();
+            int user_id = model->item(row, 0)->text().toInt();
+            m_core->deleteUserFromFamily(m_user_info.family_id, user_id);
+        }
+        else
+        {
+            QMessageBox::warning(this, "错误", "请选中一行");
+        }
+    }
+    else
+    {
+        QMessageBox::warning(this, "错误", "您还不是管理员，权限不足");
+    }
 }
 
 void page_family::on_pushButton_refresh_clicked()
@@ -51,9 +84,20 @@ void page_family::onReceiveGetFamilyUserList(QVector<user_info> family_user_list
         model->setItem(i, 2, new QStandardItem(family_user_list[i].isAdmin ? "是" : "否"));
     }
     ui.tableView->setModel(model);
-    ui.tableView->resizeColumnsToContents();
-    ui.tableView->resizeRowsToContents();
     ui.tableView->show();
+}
+
+void page_family::onReceiveDeleteUserFromFamily(bool result, QString error_msg)
+{
+    if (result)
+    {
+        QMessageBox::information(this, "成功", "删除成功");
+        m_core->getFamilyUserList(m_user_info.family_id);
+    }
+    else
+    {
+        QMessageBox::warning(this, "错误", error_msg);
+    }
 }
 
 void page_family::setupTable()

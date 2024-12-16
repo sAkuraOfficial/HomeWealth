@@ -19,7 +19,7 @@ class page_family : public QWidget
     void on_pushButton_deleteRow_clicked();
     void on_pushButton_refresh_clicked();
     void onReceiveGetFamilyUserList(QVector<user_info> family_user_list);
-
+    void onReceiveDeleteUserFromFamily(bool result, QString error_msg);
   private:
     Ui::page_familyClass ui;
     Core *m_core;

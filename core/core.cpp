@@ -59,7 +59,7 @@ void Core::onReceiveNewMessage(QString message)
     {
         processLogin(json);
     }
-    else if (type == "register")
+    else if (type == "registerResponse")
     {
         processRegister(json);
     }
@@ -111,6 +111,10 @@ void Core::onReceiveNewMessage(QString message)
     {
         ProcessCreateInsertUserToFamily(json);
     }
+    else if (type == "deleteUserFromFamilyResponse")
+    {
+        ProcessDeleteUserFromFamily(json);
+    }
     else
     {
         Logger::getInstance().log("未知消息类型");
@@ -129,12 +133,13 @@ void Core::login(QString username, QString password)
     m_pProtocol->sendMessage(doc.toJson());
 }
 
-void Core::registerUser(QString username, QString password)
+void Core::registerUser(QString username, QString password, bool is_admin)
 {
     QJsonObject json;
     json["type"] = "register";
     json["username"] = username;
     json["password"] = password;
+    json["is_admin"] = is_admin;
     QJsonDocument doc(json);
     m_pProtocol->sendMessage(doc.toJson());
 }
@@ -286,13 +291,13 @@ void Core::deleteUserFromFamily(int family_id, int user_id)
     m_pProtocol->sendMessage(doc.toJson());
 }
 
-void Core::insertUserToFamily(int family_id, int user_id)
+void Core::insertUserToFamily(int family_id, QString user_name)
 {
     // 从已有用户中添加用户到家庭
     QJsonObject json;
     json["type"] = "insertUserToFamily";
     json["family_id"] = family_id;
-    json["user_id"] = user_id;
+    json["user_name"] = user_name;
     QJsonDocument doc(json);
     m_pProtocol->sendMessage(doc.toJson());
 }
@@ -302,7 +307,7 @@ void Core::createInsertUserToFamily(int family_id, QString username, QString pas
     QJsonObject json;
     json["type"] = "createInsertUserToFamily";
     json["family_id"] = family_id;
-    json["username"] = username;
+    json["login_name"] = username;
     json["password"] = password;
     QJsonDocument doc(json);
     m_pProtocol->sendMessage(doc.toJson());
@@ -369,6 +374,16 @@ void Core::processLogin(QJsonObject msg_json)
 
 void Core::processRegister(QJsonObject msg_json)
 {
+    bool isSuccess = msg_json["result"].toBool();
+    if (isSuccess)
+    {
+        int user_id = msg_json["user_id"].toInt();
+        emit ReceiveRegisterResult(true, user_id);
+    }
+    else
+    {
+        emit ReceiveRegisterResult(false, -1);
+    }
 }
 
 void Core::processGetDataResponse(QJsonObject json)

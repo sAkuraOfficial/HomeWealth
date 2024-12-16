@@ -21,7 +21,7 @@ class Core : public QObject
     void runClient(QString ws, int timeoutMs);           // 第二个参数：连接超时时间
 
     void login(QString username, QString password);
-    void registerUser(QString username, QString password);
+    void registerUser(QString username, QString password,bool is_admin);
     // void getFriendList(int user_id);
     //  项目分类的操作
     void getCategory(int family_id);
@@ -58,7 +58,7 @@ class Core : public QObject
     // 家庭成员的操作
     void getFamilyUserList(int family_id);
     void deleteUserFromFamily(int family_id, int user_id);
-    void insertUserToFamily(int family_id, int user_id);                                   // 把已有用户加入家庭
+    void insertUserToFamily(int family_id, QString user_name);                        // 把已有用户加入家庭
     void createInsertUserToFamily(int family_id, QString username, QString password); // 新建用户并插入家庭
     // void sendMessage(message_info message);
     // 处理接收到的消息,msg是接收到的json消息
@@ -92,7 +92,7 @@ class Core : public QObject
     void ConnectTimeOut();                                                                             // 连接超时
     void ConnectSuccess();                                                                             // 连接成功
     void ReceiveLoginResult(bool result, QString username, int user_id, bool is_admin, int family_id); // 登录结果
-    void ReceiveRegisterResult(bool result);                                                           // 注册结果
+    void ReceiveRegisterResult(bool result,int user_id);                                                           // 注册结果
     void insertDetialDataError();                                                                      // 插入数据失败
     void signal_disconnect();                                                                          // 断开连接
     void ReceiveGetCategory(QVector<category_summary> categories);                                     // 获取分类，提供给page_edit与page_category使用

@@ -244,7 +244,7 @@ void page_category::onReceiveGetCategorySummary(QVector<QVector<category_summary
         model_A->setItem(i, 3, item3);
         if (summary.is_income)
         {
-            m_summary_A_edit_income += summary.amount; 
+            m_summary_A_edit_income += summary.amount;
         }
         else
         {
@@ -274,8 +274,7 @@ void page_category::onReceiveGetCategorySummary(QVector<QVector<category_summary
         }
         m_summary_B_edit_all_income = m_summary_B_edit_income - m_summary_B_edit_expense;
     }
-    emit update_UI_under_summary();//更新下面的数据
-
+    emit update_UI_under_summary(); // 更新下面的数据
 
     // 设置表格居中
     for (int i = 0; i < model_A->rowCount(); i++)
@@ -327,6 +326,11 @@ void page_category::onUpdate_UI_under_summary()
     ui.label_category_summaryB_summary_expense->setText(QString::number(m_summary_B_edit_expense));
     ui.label_category_summaryB_summary_income->setText(QString::number(m_summary_B_edit_income));
     ui.label_category_summaryB_summary_all->setText(QString::number(m_summary_B_edit_all_income));
+}
+
+void page_category::on_pushButton_refresh_category_clicked()
+{
+    m_core->getCategory(m_user_info.family_id);
 }
 
 void page_category::setupTableView()

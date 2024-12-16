@@ -5,9 +5,9 @@ HomeWealth::HomeWealth(Core *core, QWidget *parent)
 {
     ui.setupUi(this);
     // 设置窗口不可调整大小
-    this->setFixedSize(this->width(), this->height());
+    //this->setFixedSize(this->width(), this->height());
     // 隐藏最大化按钮
-    this->setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+    //this->setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
 
     connect(ui.listWidget_page, &QListWidget::itemClicked, this, &HomeWealth::onListItemClicked);
     connect(m_core, &Core::signal_disconnect, this, &HomeWealth::onDisconnected); // 断开连接
@@ -60,7 +60,7 @@ void HomeWealth::setPage(PageType page)
 {
     if (m_pages.find(page) != m_pages.end())
     {
-        // ui.stackedWidget->setCurrentWidget(m_pages[page].first);
+         //ui.stackedWidget->setCurrentWidget(m_pages[page].first);
         ui.stackedWidget->slideToIndex(ui.stackedWidget->indexOf(m_pages[page].first)); // 使用动画切换页面
     }
 }
@@ -72,12 +72,18 @@ void HomeWealth::onLoginSuccess(QString username, int user_id, bool is_admin, in
     m_user_info.isAdmin = is_admin;
     m_user_info.family_id = family_id;
     m_core->setClientUserInfo(&m_user_info); // 设置用户信息,方便内核使用
-    addPage(PageType::main);                 // 添加主页面
-    addPage(PageType::edit);                 // 编辑页面
-    addPage(PageType::category);             // 添加类别页面
-    addPage(PageType::family);               // 添加家庭页面
-    setPage(PageType::main);                 // 设置主页面
-
+    if (!page_create_success)
+    {
+        //addPage(PageType::main);     // 添加主页面
+        addPage(PageType::family);   // 添加家庭页面
+        addPage(PageType::edit);     // 编辑页面
+        addPage(PageType::category); // 添加类别页面
+        //setPage(PageType::family);     // 设置主页面
+        ui.stackedWidget->setCurrentWidget(m_pages[PageType::family].first);
+        //设置列表第一个项为选中
+        ui.listWidget_page->setCurrentRow(0);
+        page_create_success = true;
+    }
     this->show();
 }
 

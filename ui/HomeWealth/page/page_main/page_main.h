@@ -20,7 +20,7 @@ class page_main : public QWidget
     ~page_main();
 
   private:
-    void setupDonutChart(); // 初始化甜甜圈图
+    //void setupDonutChart(); // 初始化甜甜圈图
 
     Ui::page_mainClass ui;
 };
